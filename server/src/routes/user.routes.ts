@@ -6,17 +6,28 @@ import asyncErrorHandler from "../utils/asyncErrorHandler";
 
 router.post(
     "/sign-up",
-    asyncErrorHandler(async (req: Request, res: Response) => {
-        console.log(req.body);
+    asyncErrorHandler(
+        async (req: Request, res: Response, next: NextFunction) => {
+            console.log(req.body);
 
-        const userData = req.body;
-        const user = await User.create(userData);
+            const userData = req.body;
+            const { email, username, password } = userData;
 
-        res.status(200).json({
-            success: true,
-            data: user,
-        });
-    })
+            const userAlready = await User.findOne({
+                $or: [{ email: email }, { username: username }],
+            });
+            if (userAlready) {
+                return next(new ErrorHandler("username or email taken", 500));
+            }
+
+            const user = await User.create(userData);
+
+            res.status(200).json({
+                success: true,
+                data: user,
+            });
+        }
+    )
 );
 
 router.post(
