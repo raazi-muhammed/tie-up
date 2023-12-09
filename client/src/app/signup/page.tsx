@@ -54,7 +54,7 @@ const SignUp = () => {
     }
 
     return (
-        <div className="bg-secondary min-h-screen grid place-content-center">
+        <div className="bg-background min-h-screen grid place-content-center">
             <Container>
                 <section className="bg-primary-foreground p-6 rounded min-w-[25em]">
                     <p>Sign Up</p>

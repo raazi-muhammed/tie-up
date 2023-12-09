@@ -1,11 +1,13 @@
 import mongoose, { Document } from "mongoose";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-interface UserType extends Document {
+export interface UserType extends Document {
     email: string;
     username: string;
     password: string;
     comparePassword: (enteredPassword: string) => Promise<boolean>;
+    signToken: () => string;
 }
 
 const userSchema = new mongoose.Schema(
@@ -37,6 +39,12 @@ userSchema.pre("save", async function (this: UserType, next) {
 
 userSchema.methods.comparePassword = async function (enteredPassword: string) {
     return await bcrypt.compare(enteredPassword, this.password);
+};
+
+userSchema.methods.signToken = function (): string {
+    return jwt.sign({ _id: this._id, username: this.username }, "secret", {
+        expiresIn: "30d",
+    });
 };
 
 export default mongoose.model<UserType>("User", userSchema);

@@ -16,8 +16,6 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
-import axios from "axios";
-import server from "@/config/server";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { postAPI } from "@/lib/API";
@@ -51,7 +49,7 @@ const Login = () => {
     }
 
     return (
-        <div className="bg-secondary min-h-screen grid place-content-center">
+        <div className="bg-background min-h-screen grid place-content-center">
             <Container>
                 <section className="bg-primary-foreground p-6 rounded min-w-[25em]">
                     <p>Login</p>

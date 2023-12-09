@@ -1,4 +1,5 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 const app = express();
 
 import dotenv from "dotenv";
@@ -15,9 +16,18 @@ app.use(
     })
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cookieParser());
+
+app.get("*", function (req, res) {
+    // Cookies that have not been signed
+    console.log("Cookies: ", req.cookies);
+
+    // Cookies that have been signed
+    console.log("Signed Cookies: ", req.signedCookies);
+});
 
 app.use("/api/v1/user", userRoutes);
 app.use(errorHandler);

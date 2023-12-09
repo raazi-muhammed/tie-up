@@ -1,4 +1,8 @@
 import mongoose from "mongoose";
-const URL: string = process.env.DATABASE_URL || "url";
+const URL: string = process.env.DATABASE_URL;
 
-mongoose.connect(URL).then(() => console.log("Database status\t: Connected"));
+if (URL) {
+    mongoose
+        .connect(URL)
+        .then(() => console.log("Database status\t: Connected"));
+} else console.log("Database status\t: Cannot Connect");

@@ -3,7 +3,7 @@ const router = express.Router();
 import User from "../modals/user.modal";
 import ErrorHandler from "../utils/ErrorHandler";
 import asyncErrorHandler from "../utils/asyncErrorHandler";
-
+import { sendToken, tokenName } from "../utils/jwt";
 router.post(
     "/sign-up",
     asyncErrorHandler(
@@ -45,9 +45,21 @@ router.post(
             if (!isPasswordMatch)
                 return next(new ErrorHandler("Password doesn't match", 401));
 
+            sendToken(user, tokenName.USER, res);
+        }
+    )
+);
+
+router.get(
+    "/profile",
+    asyncErrorHandler(
+        async (req: Request, res: Response, next: NextFunction) => {
+            console.log(req);
+            console.log(req.cookies);
+
             res.status(200).json({
                 success: true,
-                data: user,
+                data: "hihi",
             });
         }
     )
