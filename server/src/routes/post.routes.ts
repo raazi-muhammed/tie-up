@@ -12,6 +12,9 @@ router.post(
     asyncErrorHandler(
         async (req: UserRequest, res: Response, next: NextFunction) => {
             const { heading, description } = req.body;
+            if (!heading || !description) {
+                return next(new ErrorHandler("Bad request", 400));
+            }
 
             if (!req.user) return next(new ErrorHandler("No valid user", 403));
 
@@ -34,7 +37,6 @@ router.get(
     asyncErrorHandler(
         async (req: Request, res: Response, next: NextFunction) => {
             const posts = await Post.find({}).limit(10);
-
             res.status(200).json({
                 success: true,
                 posts,

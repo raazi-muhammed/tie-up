@@ -3,6 +3,7 @@ import { decodeJWT } from "../utils/jwt";
 import User from "../modals/user.modal";
 import { UserRequest } from "../types/request";
 import { TokenName } from "../types/token";
+import ErrorHandler from "../utils/ErrorHandler";
 
 export const isUser = async (
     req: UserRequest,
@@ -15,9 +16,9 @@ export const isUser = async (
         const user = await User.findOne({ _id: decoded._id });
 
         if (user) req.user = user;
-        else throw new Error();
+        else next(new ErrorHandler("No user found", 404));
         next();
     } catch (error: any) {
-        console.log(error.message);
+        next(new ErrorHandler(error.message, 401));
     }
 };
