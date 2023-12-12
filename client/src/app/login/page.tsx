@@ -51,9 +51,9 @@ const Login = () => {
     }
 
     return (
-        <div className="bg-background min-h-screen grid place-content-center">
+        <main className="bg-background min-h-screen grid place-content-center">
             <Container>
-                <section className="bg-primary-foreground p-6 rounded min-w-[25em]">
+                <section className="bg-secondary p-6 rounded min-w-[25em]">
                     <p className="text-2xl font-bold mb-3">Login</p>
                     <Form {...form}>
                         <form
@@ -101,7 +101,7 @@ const Login = () => {
                     </Form>
                 </section>
             </Container>
-        </div>
+        </main>
     );
 };
 

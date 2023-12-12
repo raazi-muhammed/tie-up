@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: "./src/config/.env" });
 import "./db/connectDb";
 import userRoutes from "./routes/user.routes";
+import postRoutes from "./routes/post.routes";
 import errorHandler from "./middlewares/errorHandler";
 
 import cors from "cors";
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/post", postRoutes);
 
 app.use(errorHandler);
 app.listen(process.env.PORT, () => {

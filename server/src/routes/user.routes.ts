@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 const router = express.Router();
 import User from "../modals/user.modal";
+import Post from "../modals/post.modal";
 import ErrorHandler from "../utils/ErrorHandler";
 import asyncErrorHandler from "../utils/asyncErrorHandler";
 import { sendToken } from "../utils/jwt";

@@ -12,10 +12,10 @@ export default function Home() {
                     <Link href="/login">Login</Link>
                 </Button>
                 <Button asChild variant="outline">
-                    <Link href="/signup">Sing up</Link>
+                    <Link href="/profile">Profile</Link>
                 </Button>
                 <Button asChild variant="outline">
-                    <Link href="/profile">Profile</Link>
+                    <Link href="/home">Home</Link>
                 </Button>
             </Container>
         </main>

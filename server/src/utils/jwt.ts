@@ -8,7 +8,7 @@ export function sendToken(user: UserType, tokenName: TokenName, res: Response) {
 
     res.status(200)
         .cookie(tokenName, token, {
-            expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1),
+            expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Set expiration to 30 days from now
             httpOnly: true,
         })
         .json({
