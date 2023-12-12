@@ -14,6 +14,9 @@ export default function Home() {
                 <Button asChild variant="outline">
                     <Link href="/signup">Sing up</Link>
                 </Button>
+                <Button asChild variant="outline">
+                    <Link href="/profile">Profile</Link>
+                </Button>
             </Container>
         </main>
     );

@@ -41,7 +41,9 @@ const Login = () => {
     });
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        const response = await postAPI("/user/login", values);
+        const response = await postAPI("/user/login", values, {
+            showAlerts: true,
+        });
         if (response?.success) {
             toast.success(response?.data?.message || "Login Successful");
             router.push("/");
@@ -52,7 +54,7 @@ const Login = () => {
         <div className="bg-background min-h-screen grid place-content-center">
             <Container>
                 <section className="bg-primary-foreground p-6 rounded min-w-[25em]">
-                    <p>Login</p>
+                    <p className="text-2xl font-bold mb-3">Login</p>
                     <Form {...form}>
                         <form
                             onSubmit={form.handleSubmit(onSubmit)}
@@ -78,16 +80,24 @@ const Login = () => {
                                     <FormItem>
                                         <FormLabel>Password</FormLabel>
                                         <FormControl>
-                                            <Input {...field} />
+                                            <Input type="password" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit">Submit</Button>
+                            <Button className="w-full" type="submit">
+                                Submit
+                            </Button>
                         </form>
-                        <Link href="/signup">Sign Up</Link>
-                        <Link href="/">Go Home</Link>
+                        <section className="flex flex-col  text-center text-sm mt-4 gap-1 text-primary ">
+                            <Link className="hover:underline" href="/signup">
+                                Sign Up
+                            </Link>
+                            <Link className="hover:underline" href="/">
+                                Go Home
+                            </Link>
+                        </section>
                     </Form>
                 </section>
             </Container>

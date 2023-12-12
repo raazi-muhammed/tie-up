@@ -1,6 +1,7 @@
 import mongoose, { Document } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { UserToken } from "../types/token";
 
 export interface UserType extends Document {
     email: string;
@@ -42,7 +43,11 @@ userSchema.methods.comparePassword = async function (enteredPassword: string) {
 };
 
 userSchema.methods.signToken = function (): string {
-    return jwt.sign({ _id: this._id, username: this.username }, "secret", {
+    const user: UserToken = {
+        _id: this._id,
+        username: this.username,
+    };
+    return jwt.sign(user, process.env.JWT_SECRET, {
         expiresIn: "30d",
     });
 };

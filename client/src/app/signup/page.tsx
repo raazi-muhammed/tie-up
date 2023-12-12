@@ -16,8 +16,6 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
-import axios from "axios";
-import server from "@/config/server";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { postAPI } from "@/lib/API";
@@ -57,7 +55,7 @@ const SignUp = () => {
         <div className="bg-background min-h-screen grid place-content-center">
             <Container>
                 <section className="bg-primary-foreground p-6 rounded min-w-[25em]">
-                    <p>Sign Up</p>
+                    <p className="text-2xl font-bold mb-3">Sign Up</p>
                     <Form {...form}>
                         <form
                             onSubmit={form.handleSubmit(onSubmit)}
@@ -96,16 +94,22 @@ const SignUp = () => {
                                     <FormItem>
                                         <FormLabel>Password</FormLabel>
                                         <FormControl>
-                                            <Input {...field} />
+                                            <Input type="password" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit">Submit</Button>
+                            <Button className="w-full" type="submit">
+                                Submit
+                            </Button>
                         </form>
                     </Form>
-                    <Link href="/login">Login</Link>
+                    <section className="flex flex-col  text-center text-sm mt-4 gap-1 text-primary ">
+                        <Link className="hover:underline" href="/login">
+                            Login
+                        </Link>
+                    </section>
                 </section>
             </Container>
         </div>

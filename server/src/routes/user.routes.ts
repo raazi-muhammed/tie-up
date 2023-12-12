@@ -3,7 +3,11 @@ const router = express.Router();
 import User from "../modals/user.modal";
 import ErrorHandler from "../utils/ErrorHandler";
 import asyncErrorHandler from "../utils/asyncErrorHandler";
-import { sendToken, tokenName } from "../utils/jwt";
+import { sendToken } from "../utils/jwt";
+import { isUser } from "../middlewares/auth";
+import { UserRequest } from "../types/request";
+import { TokenName } from "../types/token";
+
 router.post(
     "/sign-up",
     asyncErrorHandler(
@@ -11,7 +15,7 @@ router.post(
             console.log(req.body);
 
             const userData = req.body;
-            const { email, username, password } = userData;
+            const { email, username } = userData;
 
             const userAlready = await User.findOne({
                 $or: [{ email: email }, { username: username }],
@@ -34,32 +38,29 @@ router.post(
     "/login",
     asyncErrorHandler(
         async (req: Request, res: Response, next: NextFunction) => {
-            console.log(req.body);
-
             const { username, password } = req.body;
             const user = await User.findOne({ email: username });
 
             if (!user) return next(new ErrorHandler("User not found", 400));
 
             const isPasswordMatch = await user.comparePassword(password);
-            if (!isPasswordMatch)
+            if (!isPasswordMatch) {
                 return next(new ErrorHandler("Password doesn't match", 401));
+            }
 
-            sendToken(user, tokenName.USER, res);
+            sendToken(user, TokenName.USER, res);
         }
     )
 );
 
 router.get(
     "/profile",
+    isUser,
     asyncErrorHandler(
-        async (req: Request, res: Response, next: NextFunction) => {
-            console.log(req);
-            console.log(req.cookies);
-
+        async (req: UserRequest, res: Response, next: NextFunction) => {
             res.status(200).json({
                 success: true,
-                data: "hihi",
+                user: req.user,
             });
         }
     )

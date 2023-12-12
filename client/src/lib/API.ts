@@ -3,8 +3,11 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 axios.defaults.baseURL = server;
+type Options = {
+    showAlerts?: boolean;
+};
 
-export async function getAPI(url: string, params = {}) {
+export async function getAPI(url: string, params = {}, options: Options = {}) {
     return axios({
         url,
         method: "GET",
@@ -14,11 +17,13 @@ export async function getAPI(url: string, params = {}) {
         .then((res) => res.data)
         .catch((err) => {
             console.log(err);
-            //toast.error(err.response?.data?.message || "Invalid Details")
+            if (options.showAlerts) {
+                toast.error(err.response?.data?.message || "Invalid Details");
+            }
         });
 }
 
-export async function postAPI(url: string, data = {}) {
+export async function postAPI(url: string, data = {}, options: Options = {}) {
     return axios({
         url,
         method: "POST",
@@ -28,18 +33,8 @@ export async function postAPI(url: string, data = {}) {
         .then((res) => res.data)
         .catch((err) => {
             console.log(err);
+            if (options.showAlerts) {
+                toast.error(err.response?.data?.message || "Invalid Details");
+            }
         });
 }
-/* export async function postAPI(url: string, data = {}) {
-    return axios({
-        url,
-        method: "POST",
-        withCredentials: true,
-        data,
-    })
-        .then((res) => res.data)
-        .catch((err) => {
-            console.log(err);
-            toast.error(err.response?.data?.message || "An Error occurred");
-        });
-} */

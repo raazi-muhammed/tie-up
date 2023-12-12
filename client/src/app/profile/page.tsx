@@ -1,3 +1,5 @@
+"use client";
+
 import { getAPI } from "@/lib/API";
 import React from "react";
 
