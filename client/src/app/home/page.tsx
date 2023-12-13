@@ -8,7 +8,7 @@ const HomePage = async () => {
     const posts: PostType[] = response.posts;
 
     return (
-        <main>
+        <main className="p-8">
             <section>
                 {posts.map((post) => (
                     <Card className="min-w-[400px] mb-2 p-4">
