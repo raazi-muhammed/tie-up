@@ -1,9 +1,8 @@
-import Post, { PostType } from "../modals/post.modal";
+import Post from "../modals/post.modal";
 
 export async function getAllPost() {
-    return await Post.find({}).limit(10);
+    return await Post.find({}).limit(10).populate("userRef");
 }
-
 type CreatePostType = {
     userRef: string;
     heading: string;

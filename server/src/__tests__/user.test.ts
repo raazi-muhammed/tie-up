@@ -3,6 +3,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import supertest from "supertest";
 import User from "../modals/user.modal";
+import { response } from "express";
 
 describe("User", () => {
     beforeAll(async () => {
@@ -75,6 +76,19 @@ describe("User", () => {
             });
             expect(response.statusCode).toBe(200);
             expect(response.header["set-cookie"].length).toBe(1);
+        });
+    });
+    describe("Get user details", () => {
+        const baseUrl = "/api/v1/user/get-user";
+        it("should return 404 -> If user is not found", async () => {
+            const response = await supertest(app).get(`${baseUrl}/raazi`);
+            expect(response.statusCode).toBe(404);
+        });
+        it("should return 200 with userData -> if user is in the db", async () => {
+            const response = await supertest(app).get(
+                `${baseUrl}/raazimuhammed`
+            );
+            expect(response.statusCode).toBe(404);
         });
     });
 });

@@ -7,6 +7,7 @@ import { sendToken } from "../utils/jwt";
 import { isUser } from "../middlewares/auth";
 import { UserRequest } from "../types/request";
 import { TokenName } from "../types/token";
+import { getUser } from "../database/user.db";
 
 router.post(
     "/sign-up",
@@ -64,6 +65,23 @@ router.get(
             res.status(200).json({
                 success: true,
                 user: req.user,
+            });
+        }
+    )
+);
+
+router.get(
+    "/get-user/:username",
+    asyncErrorHandler(
+        async (req: Request, res: Response, next: NextFunction) => {
+            const username = req.params.username;
+            const data = await getUser(username);
+            if (!data) {
+                return next(new ErrorHandler("User not found", 404));
+            }
+            res.status(200).json({
+                success: true,
+                userData: data,
             });
         }
     )

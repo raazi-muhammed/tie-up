@@ -1,7 +1,8 @@
 import mongoose, { Document } from "mongoose";
+import { UserType } from "./user.modal";
 
 export interface PostType extends Document {
-    userRef: string;
+    userRef: UserType;
     heading: string;
     description: string;
 }
@@ -9,8 +10,9 @@ export interface PostType extends Document {
 const postSchema = new mongoose.Schema(
     {
         userRef: {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
             required: true,
+            ref: "User",
         },
         heading: {
             type: String,

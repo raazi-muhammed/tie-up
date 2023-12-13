@@ -61,7 +61,7 @@ describe("Products", () => {
                 expect(response.statusCode).toBe(200);
             });
         });
-        describe("Getting all products", () => {
+        describe("Getting all posts", () => {
             it("should return 200 -> posts with length > 0", async () => {
                 const response = await supertest(app).get(
                     "/api/v1/post/all-post"
