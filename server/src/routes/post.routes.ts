@@ -12,14 +12,19 @@ router.post(
     isUser,
     asyncErrorHandler(
         async (req: UserRequest, res: Response, next: NextFunction) => {
-            const { heading, description } = req.body;
+            const { imageUrl, heading, description } = req.body;
 
             if (!heading || !description) {
                 return next(new ErrorHandler("Bad request", 400));
             }
 
             if (!req.user) return next(new ErrorHandler("No valid user", 403));
-            await createPost({ userRef: req.user._id, heading, description });
+            await createPost({
+                userRef: req.user._id,
+                heading,
+                description,
+                imageUrl,
+            });
 
             res.status(200).json({
                 success: true,

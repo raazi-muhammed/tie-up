@@ -5,6 +5,7 @@ export interface PostType extends Document {
     userRef: UserType;
     heading: string;
     description: string;
+    images: string[];
 }
 
 const postSchema = new mongoose.Schema(
@@ -22,6 +23,7 @@ const postSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        images: [String],
     },
     { timestamps: true }
 );

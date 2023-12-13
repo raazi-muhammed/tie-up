@@ -17,6 +17,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { postAPI } from "@/lib/API";
 import toast from "react-hot-toast";
+import { Label } from "@/components/ui/label";
+import { storage } from "../../../../firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { v4 } from "uuid";
+import { useState } from "react";
 
 const formSchema = z.object({
     heading: z.string(),
@@ -24,6 +29,8 @@ const formSchema = z.object({
 });
 
 export default function NewPostForm() {
+    const [imageToUpload, setImageToUpload] = useState<File | null>(null);
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -32,16 +39,43 @@ export default function NewPostForm() {
     });
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        const response = await postAPI("/post/new-post", values, {
+        const imageRef = ref(storage, `image/${v4()}`);
+        let imageUrl;
+        if (imageToUpload) {
+            const snapshot = await uploadBytes(imageRef, imageToUpload);
+            imageUrl = await getDownloadURL(snapshot.ref);
+            console.log(imageUrl);
+        } else {
+            toast.error("An error occured");
+            return;
+        }
+
+        const postData = {
+            heading: values.heading,
+            description: values.heading,
+            imageUrl: imageUrl,
+        };
+        const response = await postAPI("/post/new-post", postData, {
             showAlerts: true,
         });
         toast.success("Posted successfully");
-        console.log(values);
     }
 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                <div className="grid w-full max-w-sm items-center gap-1.5">
+                    <Label htmlFor="picture">Picture</Label>
+                    <Input
+                        onChange={(e) => {
+                            if (e.target.files) {
+                                setImageToUpload(e.target.files[0]);
+                            }
+                        }}
+                        id="picture"
+                        type="file"
+                    />
+                </div>
                 <FormField
                     control={form.control}
                     name="heading"
