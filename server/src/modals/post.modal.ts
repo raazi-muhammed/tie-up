@@ -8,6 +8,10 @@ export interface PostType extends Document {
 
 const postSchema = new mongoose.Schema(
     {
+        userRef: {
+            type: String,
+            required: true,
+        },
         heading: {
             type: String,
             required: true,
