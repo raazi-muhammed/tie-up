@@ -7,7 +7,6 @@ import mongoose from "mongoose";
 describe("Products", () => {
     beforeAll(async () => {
         const mongoServer = await MongoMemoryServer.create();
-
         await mongoose.connect(mongoServer.getUri());
 
         await User.create([

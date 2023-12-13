@@ -12,20 +12,19 @@ router.post(
     "/sign-up",
     asyncErrorHandler(
         async (req: Request, res: Response, next: NextFunction) => {
-            console.log(req.body);
-
             const userData = req.body;
-            const { email, username } = userData;
+            const { email, username, password } = userData;
+            if (!email || !username || !password) {
+                return next(new ErrorHandler("Invalid input", 400));
+            }
 
             const userAlready = await User.findOne({
                 $or: [{ email: email }, { username: username }],
             });
             if (userAlready) {
-                return next(new ErrorHandler("username or email taken", 500));
+                return next(new ErrorHandler("Username or email taken", 400));
             }
-
             const user = await User.create(userData);
-
             res.status(200).json({
                 success: true,
                 data: user,
@@ -39,9 +38,13 @@ router.post(
     asyncErrorHandler(
         async (req: Request, res: Response, next: NextFunction) => {
             const { username, password } = req.body;
+            if (!username || !password) {
+                return next(new ErrorHandler("Invalid input", 400));
+            }
+
             const user = await User.findOne({ email: username });
 
-            if (!user) return next(new ErrorHandler("User not found", 400));
+            if (!user) return next(new ErrorHandler("User not found", 404));
 
             const isPasswordMatch = await user.comparePassword(password);
             if (!isPasswordMatch) {
