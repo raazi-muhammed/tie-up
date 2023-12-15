@@ -30,6 +30,9 @@ const formSchema = z.object({
 
 export default function NewPostForm() {
     const [imageToUpload, setImageToUpload] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState(
+        "https://innovating.capital/wp-content/uploads/2021/05/placeholder-image-dark.jpg"
+    );
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -52,7 +55,7 @@ export default function NewPostForm() {
 
         const postData = {
             heading: values.heading,
-            description: values.heading,
+            description: values.description,
             imageUrl: imageUrl,
         };
         const response = await postAPI("/post/new-post", postData, {
@@ -66,10 +69,19 @@ export default function NewPostForm() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                 <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="picture">Picture</Label>
+                    <img
+                        className="object-cover rounded mb-2 border border-input"
+                        src={imagePreview}
+                        alt=""
+                    />
                     <Input
+                        required
                         onChange={(e) => {
                             if (e.target.files) {
                                 setImageToUpload(e.target.files[0]);
+                                setImagePreview(
+                                    URL.createObjectURL(e.target.files[0])
+                                );
                             }
                         }}
                         id="picture"

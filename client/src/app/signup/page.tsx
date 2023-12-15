@@ -16,7 +16,7 @@ const SignUp = () => {
     return (
         <div className="bg-background min-h-screen grid place-content-center">
             <Container>
-                <Card className="min-w-[400px]">
+                <Card className="min-w-[400px] p-6 pt-8">
                     <CardHeader>
                         <CardTitle>Sign Up</CardTitle>
                         <CardDescription>Create your account</CardDescription>

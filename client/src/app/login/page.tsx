@@ -15,7 +15,7 @@ const Login = () => {
     return (
         <main className="bg-background min-h-screen grid place-content-center">
             <Container>
-                <Card className="min-w-[400px]">
+                <Card className="min-w-[400px] p-6 pt-8">
                     <CardHeader>
                         <CardTitle>Login</CardTitle>
                         <CardDescription>Login in your account</CardDescription>
