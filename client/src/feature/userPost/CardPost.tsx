@@ -10,17 +10,16 @@ import { getFormattedDate } from "@/utils/formatting";
 import { PostType } from "@/types/post.types";
 import { BsHeart, BsChat, BsShare } from "react-icons/bs";
 import ReactionButton from "./components/ReactionButton";
+import PostUser from "./components/PostUser";
 
 const CardPost = ({ post }: { post: PostType }) => {
     return (
         <Card className="w-full max-w-[35rem] mb-4">
             <CardHeader>
-                <Link
-                    href={`user/${post.userRef.username}`}
-                    className="hover:underline"
-                >
-                    User: {post.userRef.username}
-                </Link>
+                <PostUser
+                    username={post.userRef.username}
+                    avatar={post.userRef.avatar}
+                />
             </CardHeader>
             <CardContent>
                 <img

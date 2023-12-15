@@ -1,6 +1,8 @@
 import { getAPI } from "@/lib/API";
 import React from "react";
 import { notFound } from "next/navigation";
+import UserProfileHead from "@/feature/userProfile/components/UserProfileHead";
+import MainCenterContainer from "@/components/layout/mainCenterContainer";
 
 const UserPage = async ({ params }: { params: { username: string } }) => {
     const username = params.username;
@@ -11,13 +13,9 @@ const UserPage = async ({ params }: { params: { username: string } }) => {
     }
 
     return (
-        <main>
-            <section>
-                <p>{response.userData.username}</p>
-                <p>{response.userData.email}</p>
-            </section>
-            {JSON.stringify(response.userData)}
-        </main>
+        <MainCenterContainer>
+            <UserProfileHead userData={response.userData} />
+        </MainCenterContainer>
     );
 };
 

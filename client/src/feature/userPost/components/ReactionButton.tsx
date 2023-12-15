@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 const ReactionButton = ({ children }: any) => {
     return (
-        <Button className="flex-1 gap-2 text-lg" variant="ghost">
+        <Button className="flex-1 gap-2 text-lg font-light" variant="ghost">
             {children}
         </Button>
     );

@@ -27,7 +27,26 @@ export default function RootLayout({
                 >
                     {children}
                 </ThemeProvider>
-                <Toaster position="top-right" reverseOrder={false} />
+                <Toaster
+                    position="top-right"
+                    reverseOrder={false}
+                    toastOptions={{
+                        success: {
+                            style: {
+                                borderRadius: "var(--radius)",
+                                backgroundColor: "hsl(var(--card))",
+                                color: "hsl(var(--card-foreground))",
+                            },
+                        },
+                        error: {
+                            style: {
+                                borderRadius: "var(--radius)",
+                                backgroundColor: "hsl(var(--card))",
+                                color: "hsl(var(--card-foreground))",
+                            },
+                        },
+                    }}
+                />
             </body>
         </html>
     );

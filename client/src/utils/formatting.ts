@@ -43,3 +43,7 @@ export function getFormattedDate(
 
     return formattedDate;
 }
+
+export function getAvatarFallBack(username: string) {
+    return username.charAt(0).concat(username.charAt(1)).toUpperCase();
+}

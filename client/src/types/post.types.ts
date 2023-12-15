@@ -1,7 +1,12 @@
 export interface UserType {
-    email: string;
+    _id?: string;
+    email?: string;
     username: string;
-    password: string;
+    avatar?: string;
+    fullName?: string;
+    bio?: string;
+    dateOfBirth?: string;
+    password?: string;
 }
 
 export interface PostType {
