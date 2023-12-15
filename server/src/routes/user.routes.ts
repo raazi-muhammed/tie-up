@@ -1,13 +1,13 @@
 import express, { NextFunction, Request, Response } from "express";
 const router = express.Router();
-import User from "../modals/user.modal";
+import User, { UserObjectType, UserType } from "../modals/user.modal";
 import ErrorHandler from "../utils/ErrorHandler";
 import asyncErrorHandler from "../utils/asyncErrorHandler";
 import { sendToken } from "../utils/jwt";
 import { isUser } from "../middlewares/auth";
 import { UserRequest } from "../types/request";
 import { TokenName } from "../types/token";
-import { getUser } from "../database/user.db";
+import { getUserByUsername, setUpUser } from "../database/user.db";
 
 router.post(
     "/sign-up",
@@ -70,12 +70,59 @@ router.get(
     )
 );
 
+router.post(
+    "/setup-user",
+    isUser,
+    asyncErrorHandler(
+        async (req: UserRequest, res: Response, next: NextFunction) => {
+            let userId;
+            if (req.user) {
+                userId = req.user._id;
+            } else return next(new ErrorHandler("No user", 400));
+
+            const {
+                avatar,
+                bio,
+                dateOfBirth,
+                fullName,
+                username,
+            }: {
+                avatar: string;
+                bio: string;
+                dateOfBirth: string;
+                fullName: string;
+                username: string;
+            } = req.body;
+
+            const userData: UserObjectType = {
+                bio: bio,
+                dateOfBirth: dateOfBirth,
+                fullName: fullName,
+                username: username,
+                avatar: avatar,
+            };
+
+            const data = await getUserByUsername(userData.username);
+            if (data) {
+                return next(new ErrorHandler("Username taken", 404));
+            }
+
+            await setUpUser(userId, userData);
+
+            res.status(200).json({
+                success: true,
+                user: req.user,
+            });
+        }
+    )
+);
+
 router.get(
     "/get-user/:username",
     asyncErrorHandler(
         async (req: Request, res: Response, next: NextFunction) => {
             const username = req.params.username;
-            const data = await getUser(username);
+            const data = await getUserByUsername(username);
             if (!data) {
                 return next(new ErrorHandler("User not found", 404));
             }

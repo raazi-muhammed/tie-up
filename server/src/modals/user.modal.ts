@@ -3,10 +3,21 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { UserToken } from "../types/token";
 
-export interface UserType extends Document {
-    email: string;
+export interface UserObjectType {
+    _id?: string;
+    email?: string;
     username: string;
+    avatar?: string;
+    fullName?: string;
+    bio?: string;
+    dateOfBirth?: string;
+    password?: string;
+}
+
+export interface UserType extends Document, UserObjectType {
+    _id: string;
     password: string;
+    email: string;
     comparePassword: (enteredPassword: string) => Promise<boolean>;
     signToken: () => string;
 }
@@ -24,6 +35,18 @@ const userSchema = new mongoose.Schema(
         password: {
             type: String,
             required: true,
+        },
+        fullName: {
+            type: String,
+        },
+        avatar: {
+            type: String,
+        },
+        dateOfBirth: {
+            type: String,
+        },
+        bio: {
+            type: String,
         },
     },
     {

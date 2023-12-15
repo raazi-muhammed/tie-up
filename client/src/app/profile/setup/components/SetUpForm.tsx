@@ -1,34 +1,37 @@
 "use client";
 
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { postAPI } from "@/lib/API";
+import { Label } from "@/components/ui/label";
+import { storage } from "../../../../firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { v4 } from "uuid";
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { postAPI } from "@/lib/API";
-import toast from "react-hot-toast";
-import { Label } from "@/components/ui/label";
-import { storage } from "../../../../firebase";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { v4 } from "uuid";
-import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
-    heading: z.string(),
-    description: z.string(),
+    fullName: z.string(),
+    username: z.string(),
+    bio: z.string(),
+    dateOfBirth: z.string(),
 });
 
-export default function NewPostForm() {
+const SignUpForm = () => {
+    const router = useRouter();
     const [imageToUpload, setImageToUpload] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState(
         "https://innovating.capital/wp-content/uploads/2021/05/placeholder-image-dark.jpg"
@@ -36,9 +39,7 @@ export default function NewPostForm() {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            heading: "",
-        },
+        defaultValues: {},
     });
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -54,23 +55,34 @@ export default function NewPostForm() {
         }
 
         const postData = {
-            heading: values.heading,
-            description: values.description,
-            imageUrl: imageUrl,
+            fullName: values.fullName,
+            username: values.username,
+            bio: values.bio,
+            dateOfBirth: values.dateOfBirth,
+            avatar: imageUrl,
         };
-        const response = await postAPI("/post/new-post", postData, {
+
+        console.log(postData);
+
+        const response = await postAPI("/user/setup-user", postData, {
             showAlerts: true,
         });
-        toast.success("Posted successfully");
+
+        if (response?.success) {
+            toast.success(
+                response?.data?.message || "Profile setup successful"
+            );
+            router.push("/profile");
+        }
     }
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
                 <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="picture">Picture</Label>
                     <img
-                        className="object-cover rounded mb-2 border border-input"
+                        className="object-cover w-52 aspect-square rounded-full mb-2 border border-input mx-auto"
                         src={imagePreview}
                         alt=""
                     />
@@ -90,10 +102,10 @@ export default function NewPostForm() {
                 </div>
                 <FormField
                     control={form.control}
-                    name="heading"
+                    name="fullName"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Heading</FormLabel>
+                            <FormLabel>Full Name</FormLabel>
                             <FormControl>
                                 <Input {...field} />
                             </FormControl>
@@ -103,10 +115,23 @@ export default function NewPostForm() {
                 />
                 <FormField
                     control={form.control}
-                    name="description"
+                    name="username"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Description</FormLabel>
+                            <FormLabel>Username</FormLabel>
+                            <FormControl>
+                                <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="bio"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Bio</FormLabel>
                             <FormControl>
                                 <Textarea {...field} />
                             </FormControl>
@@ -114,11 +139,25 @@ export default function NewPostForm() {
                         </FormItem>
                     )}
                 />
-                <section className="flex justify-between">
-                    <Button variant="outline">Cancel</Button>
-                    <Button type="submit">Submit</Button>
-                </section>
+                <FormField
+                    control={form.control}
+                    name="dateOfBirth"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Date of Birth</FormLabel>
+                            <FormControl>
+                                <Input type="date" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <Button className="w-full" type="submit">
+                    Done
+                </Button>
             </form>
         </Form>
     );
-}
+};
+
+export default SignUpForm;

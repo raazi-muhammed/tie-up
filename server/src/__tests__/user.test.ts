@@ -91,4 +91,17 @@ describe("User", () => {
             expect(response.statusCode).toBe(404);
         });
     });
+    describe("Setting up user profile", () => {
+        const baseUrl = "/api/v1/user/setup-user";
+        it("should return 404 -> If no data is passed", async () => {
+            const response = await supertest(app).post(baseUrl);
+            expect(response.statusCode).toBe(400);
+        });
+        it("should return 200 with userData -> if user is in the db", async () => {
+            const response = await supertest(app).get(
+                `${baseUrl}/raazimuhammed`
+            );
+            expect(response.statusCode).toBe(404);
+        });
+    });
 });

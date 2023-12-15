@@ -15,6 +15,9 @@ const UserPage = async () => {
             <Button>
                 <Link href="/profile/newpost">New Post</Link>
             </Button>
+            <Button>
+                <Link href="/profile/setup">Set up Profile</Link>
+            </Button>
         </div>
     );
 };
