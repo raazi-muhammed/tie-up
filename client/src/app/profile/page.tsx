@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import UserProfileHead from "@/feature/userProfile/components/UserProfileHead";
 import MainCenterContainer from "@/components/layout/mainCenterContainer";
+import UserPosts from "@/feature/userProfile/components/UserPosts";
 
 const UserPage = async () => {
     const response = await getAPI("/user/profile");
@@ -36,6 +37,7 @@ const UserPage = async () => {
                         <Link href="/profile/newpost">New Post</Link>
                     </Button>
                     <UserProfileHead userData={response.user} />
+                    <UserPosts userData={response.user} />
                 </section>
             )}
         </MainCenterContainer>

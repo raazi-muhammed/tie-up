@@ -11,6 +11,11 @@ import { PostType } from "@/types/post.types";
 import { BsHeart, BsChat, BsShare } from "react-icons/bs";
 import ReactionButton from "./components/ReactionButton";
 import PostUser from "./components/PostUser";
+import {
+    Image,
+    ImageContainer,
+    ImageFallback,
+} from "@/components/custom/image";
 
 const CardPost = ({ post }: { post: PostType }) => {
     return (
@@ -22,10 +27,12 @@ const CardPost = ({ post }: { post: PostType }) => {
                 />
             </CardHeader>
             <CardContent>
-                <img
-                    className="w-full object-cover rounded aspect-square"
-                    src={post.images[0]}
-                />
+                <Link href={`/post/${post._id}`}>
+                    <ImageContainer>
+                        <Image src={post.images[0]} />
+                        <ImageFallback />
+                    </ImageContainer>
+                </Link>
                 <section className="p-2">
                     <p className="font-bold mb-1 capitalize">{post.heading}</p>
                     <p className="text-sm opacity-60">{post.description}</p>

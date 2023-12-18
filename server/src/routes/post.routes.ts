@@ -5,7 +5,12 @@ import ErrorHandler from "../utils/ErrorHandler";
 import asyncErrorHandler from "../utils/asyncErrorHandler";
 import { isUser } from "../middlewares/auth";
 import { UserRequest } from "../types/request";
-import { getAllPost, createPost } from "../database/post.db";
+import {
+    getAllPost,
+    createPost,
+    getAllPostFromUser,
+    getSinglePost,
+} from "../database/post.db";
 
 router.post(
     "/new-post",
@@ -39,6 +44,47 @@ router.get(
     asyncErrorHandler(
         async (req: Request, res: Response, next: NextFunction) => {
             const posts = await getAllPost();
+            res.status(200).json({
+                success: true,
+                posts,
+                message: "Posted successfully",
+            });
+        }
+    )
+);
+
+router.get(
+    "/get-post",
+    asyncErrorHandler(
+        async (req: Request, res: Response, next: NextFunction) => {
+            const postId = req.query.postId?.toString();
+
+            let post;
+            if (postId) {
+                post = await getSinglePost(postId);
+            } else return next(new ErrorHandler("User details invalid", 400));
+
+            res.status(200).json({
+                success: true,
+                postData: post,
+                message: "Posted successfully",
+            });
+        }
+    )
+);
+
+router.get(
+    "/posts-by-user",
+    asyncErrorHandler(
+        async (req: Request, res: Response, next: NextFunction) => {
+            console.log(req.query);
+            const userId = req.query.userId?.toString();
+
+            let posts;
+            if (userId) {
+                posts = await getAllPostFromUser(userId);
+            } else return next(new ErrorHandler("User details invalid", 400));
+
             res.status(200).json({
                 success: true,
                 posts,
