@@ -3,6 +3,7 @@ import { UserType } from "@/types/post.types";
 import Container from "@/components/ui/container";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getAvatarFallBack } from "@/utils/formatting";
+import FollowButton from "./FollowButton";
 
 const UserProfileHead = ({ userData }: { userData: UserType }) => {
     return (
@@ -18,8 +19,14 @@ const UserProfileHead = ({ userData }: { userData: UserType }) => {
                 <section>
                     <p>{userData?.fullName}</p>
                     <p>{userData?.username}</p>
+
                     <p className="text-xs opacity-60">{userData?.bio}</p>
                 </section>
+                <section>
+                    <p className="text-lg">{userData?.followersCount}</p>
+                    <p className="text-xs">Followers</p>
+                </section>
+                {userData._id ? <FollowButton toFollow={userData._id} /> : null}
             </section>
         </Container>
     );

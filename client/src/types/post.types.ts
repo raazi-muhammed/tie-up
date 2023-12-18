@@ -7,6 +7,7 @@ export interface UserType {
     bio?: string;
     dateOfBirth?: string;
     password?: string;
+    followersCount?: number;
 }
 
 export interface PostType {

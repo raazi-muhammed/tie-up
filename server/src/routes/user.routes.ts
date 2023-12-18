@@ -7,6 +7,7 @@ import { sendToken } from "../utils/jwt";
 import { isUser } from "../middlewares/auth";
 import { UserRequest } from "../types/request";
 import { TokenName } from "../types/token";
+import { addFollower } from "../database/follower.db";
 import { getUserByUsername, setUpUser } from "../database/user.db";
 
 router.post(
@@ -129,6 +130,30 @@ router.get(
             res.status(200).json({
                 success: true,
                 userData: data,
+            });
+        }
+    )
+);
+
+router.post(
+    "/follow-user",
+    isUser,
+    asyncErrorHandler(
+        async (req: UserRequest, res: Response, next: NextFunction) => {
+            const userId = req.userId;
+
+            const { toFollow } = req.body;
+            console.log(userId, toFollow);
+
+            const didFollow = await addFollower(userId, toFollow);
+
+            if (!didFollow) {
+                return next(new ErrorHandler("Cannot follow the user", 400));
+            }
+
+            res.status(200).json({
+                success: true,
+                message: "Followed the user",
             });
         }
     )

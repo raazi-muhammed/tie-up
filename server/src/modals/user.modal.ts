@@ -12,6 +12,7 @@ export interface UserObjectType {
     bio?: string;
     dateOfBirth?: string;
     password?: string;
+    followersCount?: number;
 }
 
 export interface UserType extends Document, UserObjectType {
@@ -47,6 +48,10 @@ const userSchema = new mongoose.Schema(
         },
         bio: {
             type: String,
+        },
+        followersCount: {
+            type: Number,
+            default: 0,
         },
     },
     {

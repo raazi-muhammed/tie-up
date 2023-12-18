@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { postAPI } from "@/lib/API";
+import { getAPI, postAPI } from "@/lib/API";
 import { Label } from "@/components/ui/label";
 import { storage } from "../../../../firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -39,19 +39,34 @@ const SignUpForm = () => {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {},
+        defaultValues: { fullName: "hi" },
     });
+
+    useEffect(() => {
+        getAPI("/user/profile").then((response) => {
+            console.log(response);
+            setImagePreview(response.user.avatar);
+            form.setValue("fullName", response.user.fullName);
+            form.setValue("username", response.user.userName);
+            form.setValue("bio", response.user.bio);
+            form.setValue("dateOfBirth", response.user.dateOfBirth);
+        });
+    }, []);
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         const imageRef = ref(storage, `image/${v4()}`);
         let imageUrl;
+
         if (imageToUpload) {
             const snapshot = await uploadBytes(imageRef, imageToUpload);
             imageUrl = await getDownloadURL(snapshot.ref);
             console.log(imageUrl);
         } else {
-            toast.error("An error occurred");
-            return;
+            if (!imagePreview) {
+                toast.error("An error occurred");
+                return;
+            }
+            imageUrl = imagePreview;
         }
 
         const postData = {
@@ -87,7 +102,6 @@ const SignUpForm = () => {
                         alt=""
                     />
                     <Input
-                        required
                         onChange={(e) => {
                             if (e.target.files) {
                                 setImageToUpload(e.target.files[0]);
