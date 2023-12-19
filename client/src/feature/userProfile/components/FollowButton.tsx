@@ -50,9 +50,13 @@ const FollowButton = ({ toFollow }: { toFollow: string }) => {
     return (
         <>
             {alreadyFollows ? (
-                <Button onClick={handleUnFollow}>Unfollow</Button>
+                <Button className="my-auto" onClick={handleUnFollow}>
+                    Unfollow
+                </Button>
             ) : (
-                <Button onClick={handleFollow}>Follow</Button>
+                <Button className="my-auto" onClick={handleFollow}>
+                    Follow
+                </Button>
             )}
         </>
     );

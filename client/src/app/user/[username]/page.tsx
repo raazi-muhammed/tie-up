@@ -16,6 +16,7 @@ const UserPage = async ({ params }: { params: { username: string } }) => {
     return (
         <MainCenterContainer>
             <UserProfileHead userData={response.userData} />
+            <hr className="m-5" />
             <UserPosts userData={response.userData} />
         </MainCenterContainer>
     );

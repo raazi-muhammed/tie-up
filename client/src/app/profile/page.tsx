@@ -33,10 +33,13 @@ const UserPage = async () => {
                 </>
             ) : (
                 <section>
-                    <Button>
-                        <Link href="/profile/newpost">New Post</Link>
-                    </Button>
+                    <nav className="top-0 flex justify-end">
+                        <Button variant="outline">
+                            <Link href="/profile/newpost">New Post</Link>
+                        </Button>
+                    </nav>
                     <UserProfileHead userData={response.user} />
+                    <hr className="m-5" />
                     <UserPosts userData={response.user} />
                 </section>
             )}

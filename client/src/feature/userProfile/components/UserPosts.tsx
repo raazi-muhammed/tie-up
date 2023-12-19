@@ -17,21 +17,16 @@ const UserPosts = async ({ userData }: { userData: UserType }) => {
 
     return (
         <Container>
-            <div>
-                <section className="grid grid-cols-3 gap-6">
-                    {posts.map((post) => (
-                        <Link href={`/post/${post._id}`}>
-                            <ImageContainer>
-                                <Image
-                                    src={post.images[0]}
-                                    alt={post.heading}
-                                />
-                                <ImageFallback />
-                            </ImageContainer>
-                        </Link>
-                    ))}
-                </section>
-            </div>
+            <section className="grid grid-cols-3 gap-6 p-4">
+                {posts.map((post) => (
+                    <Link href={`/post/${post._id}`}>
+                        <ImageContainer>
+                            <Image src={post.images[0]} alt={post.heading} />
+                            <ImageFallback />
+                        </ImageContainer>
+                    </Link>
+                ))}
+            </section>
         </Container>
     );
 };
