@@ -26,7 +26,7 @@ const UserProfileHead = ({ userData }: { userData: UserType }) => {
                 </section>
                 <section className="flex gap-4">
                     <SmallCard caption={"Posts"} number={4} />
-                    <Link href={"/profile/followers"} className="h-full">
+                    <Link href={"/profile/followers"}>
                         <SmallCard
                             caption={"Followers"}
                             number={userData?.followersCount}

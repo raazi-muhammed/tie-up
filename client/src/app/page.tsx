@@ -17,6 +17,9 @@ export default function Home() {
                 <Button asChild variant="outline">
                     <Link href="/home">Home</Link>
                 </Button>
+                <Button asChild variant="outline">
+                    <Link href="/inbox">Inbox</Link>
+                </Button>
             </Container>
         </main>
     );
