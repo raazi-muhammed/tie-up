@@ -4,10 +4,10 @@ export async function getUserByUsername(username: string) {
     return await User.findOne({ username });
 }
 
-export async function changeFollowerCount(userId: string) {
+export async function changeFollowerCount(userId: string, amount = 1) {
     return await User.findOneAndUpdate(
         { _id: userId },
-        { $inc: { followersCount: 1 } },
+        { $inc: { followersCount: amount } },
         { upsert: true }
     );
 }

@@ -16,7 +16,7 @@ const PostUser = ({ username, avatar }: PostUserType) => {
                 <AvatarFallback>{getAvatarFallBack(username)}</AvatarFallback>
             </Avatar>
             <Link
-                href={`user/${username}`}
+                href={`/user/${username}`}
                 className="hover:underline mb-1 mt-auto"
             >
                 {username}

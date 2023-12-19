@@ -1,5 +1,5 @@
 export interface UserType {
-    _id?: string;
+    _id: string;
     email?: string;
     username: string;
     avatar?: string;
@@ -17,4 +17,9 @@ export interface PostType {
     description: string;
     images: string[];
     createdAt: string;
+}
+
+export interface FollowersType {
+    follower: UserType;
+    followed: UserType;
 }

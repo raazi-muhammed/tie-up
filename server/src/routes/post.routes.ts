@@ -47,7 +47,6 @@ router.get(
             res.status(200).json({
                 success: true,
                 posts,
-                message: "Posted successfully",
             });
         }
     )
@@ -59,15 +58,13 @@ router.get(
         async (req: Request, res: Response, next: NextFunction) => {
             const postId = req.query.postId?.toString();
 
-            let post;
-            if (postId) {
-                post = await getSinglePost(postId);
-            } else return next(new ErrorHandler("User details invalid", 400));
+            if (!postId)
+                return next(new ErrorHandler("User details invalid", 400));
+            const post = await getSinglePost(postId);
 
             res.status(200).json({
                 success: true,
                 postData: post,
-                message: "Posted successfully",
             });
         }
     )
@@ -77,18 +74,15 @@ router.get(
     "/posts-by-user",
     asyncErrorHandler(
         async (req: Request, res: Response, next: NextFunction) => {
-            console.log(req.query);
             const userId = req.query.userId?.toString();
-
-            let posts;
-            if (userId) {
-                posts = await getAllPostFromUser(userId);
-            } else return next(new ErrorHandler("User details invalid", 400));
+            if (!userId) {
+                return next(new ErrorHandler("User details invalid", 400));
+            }
+            const posts = await getAllPostFromUser(userId);
 
             res.status(200).json({
                 success: true,
                 posts,
-                message: "Posted successfully",
             });
         }
     )

@@ -7,7 +7,12 @@ import { sendToken } from "../utils/jwt";
 import { isUser } from "../middlewares/auth";
 import { UserRequest } from "../types/request";
 import { TokenName } from "../types/token";
-import { addFollower } from "../database/follower.db";
+import {
+    addFollower,
+    alreadyFollows,
+    getFollowersOfUser,
+    removeFollower,
+} from "../database/follower.db";
 import { getUserByUsername, setUpUser } from "../database/user.db";
 
 router.post(
@@ -141,12 +146,9 @@ router.post(
     asyncErrorHandler(
         async (req: UserRequest, res: Response, next: NextFunction) => {
             const userId = req.userId;
-
             const { toFollow } = req.body;
-            console.log(userId, toFollow);
 
             const didFollow = await addFollower(userId, toFollow);
-
             if (!didFollow) {
                 return next(new ErrorHandler("Cannot follow the user", 400));
             }
@@ -154,6 +156,77 @@ router.post(
             res.status(200).json({
                 success: true,
                 message: "Followed the user",
+            });
+        }
+    )
+);
+
+router.get(
+    "/already-follows",
+    isUser,
+    asyncErrorHandler(
+        async (req: UserRequest, res: Response, next: NextFunction) => {
+            const userId = req.userId;
+            const toFollow = req.query.toFollow?.toString();
+
+            if (!toFollow) {
+                console.log("no to follow");
+                return;
+            }
+
+            const isAlreadyFollowing = await alreadyFollows(userId, toFollow);
+
+            if (!isAlreadyFollowing) {
+                res.status(200).json({
+                    success: true,
+                    isFollowing: false,
+                    message: "Does not follow",
+                });
+                return;
+            }
+
+            res.status(200).json({
+                success: true,
+                isFollowing: true,
+                message: "Follows the user",
+            });
+        }
+    )
+);
+
+router.post(
+    "/un-follow-user",
+    isUser,
+    asyncErrorHandler(
+        async (req: UserRequest, res: Response, next: NextFunction) => {
+            const userId = req.userId;
+            const { toUnFollow } = req.body;
+
+            const didFollow = await removeFollower(userId, toUnFollow);
+            if (!didFollow) {
+                return next(new ErrorHandler("Cannot follow the user", 400));
+            }
+
+            res.status(200).json({
+                success: true,
+                message: "Un Followed the user",
+            });
+        }
+    )
+);
+
+router.get(
+    "/get-followers-list",
+    isUser,
+    asyncErrorHandler(
+        async (req: UserRequest, res: Response, next: NextFunction) => {
+            const userId = req.user._id.toString();
+
+            const followers = await getFollowersOfUser(userId);
+
+            res.status(200).json({
+                success: true,
+                followers,
             });
         }
     )

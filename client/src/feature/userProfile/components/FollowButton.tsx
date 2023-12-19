@@ -1,11 +1,23 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { postAPI } from "@/lib/API";
+import { getAPI, postAPI } from "@/lib/API";
 import toast from "react-hot-toast";
 
 const FollowButton = ({ toFollow }: { toFollow: string }) => {
+    const [alreadyFollows, setAlreadyFollows] = useState(false);
+    useEffect(() => {
+        getAPI("/user/already-follows", {
+            toFollow: toFollow,
+        }).then((response) => {
+            console.log(response);
+            if (response?.success && response?.isFollowing) {
+                setAlreadyFollows(true);
+            }
+        });
+    }, []);
+
     async function handleFollow() {
         const response = await postAPI(
             "user/follow-user",
@@ -14,13 +26,36 @@ const FollowButton = ({ toFollow }: { toFollow: string }) => {
             },
             { showAlerts: true }
         );
-        console.log("HI", response);
 
         if (response.success) {
             toast.success(response.message);
+            setAlreadyFollows(true);
         }
     }
-    return <Button onClick={handleFollow}>Follow</Button>;
+
+    async function handleUnFollow() {
+        const response = await postAPI(
+            "user/un-follow-user",
+            {
+                toUnFollow: toFollow,
+            },
+            { showAlerts: true }
+        );
+
+        if (response.success) {
+            toast.success(response.message);
+            setAlreadyFollows(false);
+        }
+    }
+    return (
+        <>
+            {alreadyFollows ? (
+                <Button onClick={handleUnFollow}>Unfollow</Button>
+            ) : (
+                <Button onClick={handleFollow}>Follow</Button>
+            )}
+        </>
+    );
 };
 
 export default FollowButton;
