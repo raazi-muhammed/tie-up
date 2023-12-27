@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: "./src/config/.env" });
 import userRoutes from "./routes/user.routes";
 import postRoutes from "./routes/post.routes";
+import inboxRoutes from "./routes/inbox.routes";
 import errorHandler from "./middlewares/errorHandler";
 
 import cors from "cors";
@@ -24,7 +25,6 @@ const io = new Server(http, {
         origin: ["http://localhost:3000", "https://shopnexus.live"],
     },
 });
-//import sockets from "./socket/socket";
 
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
@@ -40,24 +40,24 @@ app.get("/api/v1/test", (req, res) => {
 
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/post", postRoutes);
+app.use("/api/v1/inbox", inboxRoutes);
 
 io.on("connection", (socket: any) => {
-    console.log(socket.id);
     socket.removeAllListeners();
 
     socket.on(
         "send-message",
-        (sender: string, receiver: string, message: string) => {
-            console.log("SR", sender, receiver);
-
-            socket.broadcast.emit("receive-message", {
+        (sender: string, room: string, message: string) => {
+            socket.to(room).emit("receive-message", {
                 from: sender,
-                to: receiver,
+                conversationId: room,
                 message,
             });
-            console.log("M", message);
         }
     );
+    socket.on("join-conversation", (room: string) => {
+        socket.join(room);
+    });
 });
 
 app.use(errorHandler);

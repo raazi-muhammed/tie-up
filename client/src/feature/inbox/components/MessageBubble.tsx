@@ -1,4 +1,5 @@
 import React from "react";
+import moment from "moment";
 
 export enum MessageVariant {
     SENDER = "primary",
@@ -32,7 +33,7 @@ const MessageBubble = ({ message, time, variant }: MessageBubbleType) => {
                         : "ms-auto me-3 text-right"
                 }`}
             >
-                {time}
+                {moment(time).startOf("m").fromNow()}
             </p>
         </section>
     );

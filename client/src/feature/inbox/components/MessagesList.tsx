@@ -1,10 +1,10 @@
-import React from "react";
+import React, { Fragment } from "react";
 import MessageBubble, { MessageVariant } from "./MessageBubble";
 
 type MessageToDisplayType = {
-    message: string;
+    conversationId: string;
+    content: string;
     sender: string;
-    receiver: string;
     time: string;
 };
 
@@ -18,22 +18,21 @@ const MessagesList = ({ messageToDisplay, sender, receiver }: Props) => {
     return (
         <>
             {messageToDisplay.map((message) => (
-                <>
-                    {message.sender == sender &&
-                    message.receiver == receiver ? (
+                <Fragment key={message.time}>
+                    {message.sender == sender ? (
                         <MessageBubble
-                            message={message.message}
+                            message={message.content}
                             time={message.time}
                             variant={MessageVariant.RECEIVER}
                         />
                     ) : message.sender == receiver ? (
                         <MessageBubble
-                            message={message.message}
+                            message={message.content}
                             time={message.time}
                             variant={MessageVariant.SENDER}
                         />
                     ) : null}
-                </>
+                </Fragment>
             ))}
         </>
     );

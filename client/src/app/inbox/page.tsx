@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 
 import React, { FormEvent, useEffect, useMemo, useState } from "react";
 import MainCenterContainer from "@/components/layout/mainCenterContainer";
-import { getAPI } from "@/lib/API";
+import { getAPI, postAPI } from "@/lib/API";
 import InboxUserList from "@/feature/inbox/components/InboxUserList";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -18,9 +18,9 @@ import ChatHeader from "../../feature/inbox/components/ChatHeader";
 import MessagesList from "@/feature/inbox/components/MessagesList";
 
 type MessageToDisplayType = {
-    message: string;
+    conversationId: string;
+    content: string;
     sender: string;
-    receiver: string;
     time: string;
 };
 
@@ -29,6 +29,7 @@ const UserInbox = () => {
     const [currentReceiver, setCurrentReceiver] = useState<UserType | null>(
         null
     );
+    const [conversationId, setConversationId] = useState<string | null>(null);
 
     const [messageToDisplay, setMessagesToDisplay] = useState<
         MessageToDisplayType[]
@@ -47,23 +48,23 @@ const UserInbox = () => {
 
     const socket = useMemo(() => io("http://localhost:5000"), [io]);
 
-    const handleSendMessage = (e: FormEvent<HTMLFormElement>) => {
+    const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!message) {
             toast.error("Empty message");
             return;
         }
 
-        if (!currentReceiver || !currentSender) {
-            console.log("no sender or receiver, while sending");
+        if (!currentReceiver || !currentSender || !conversationId) {
+            console.log("no sender or receiver, or not id, while sending");
             return;
         }
 
         const messageToAdd: MessageToDisplayType = {
-            message: message,
+            content: message,
             sender: currentSender.username,
-            receiver: currentReceiver.username,
-            time: "s now",
+            conversationId,
+            time: new Date().toString(),
         };
         let _messageToDisplay = messageToDisplay;
         _messageToDisplay.push(messageToAdd);
@@ -72,48 +73,57 @@ const UserInbox = () => {
         socket.emit(
             "send-message",
             currentSender.username,
-            currentReceiver.username,
+            conversationId,
             message
         );
 
         console.log("Sendering msg to add", messageToAdd);
+        const res = await postAPI("/inbox/send-message", {
+            conversationId,
+            message,
+        });
+        console.log(res);
 
         setMessage("");
 
         return () => socket.off("send-message");
     };
 
-    const selectConversation = (person: UserType) => {
+    const selectConversation = async (person: UserType) => {
         console.log(person.username);
         setCurrentReceiver(person);
+        const response = await getAPI(
+            `/inbox/get-conversation?sendTo=${person.username}`
+        );
+        console.log(response);
+        setMessagesToDisplay(response.messages);
+        if (response.success) {
+            setConversationId(response.conversationId);
+            socket.emit("join-conversation", response.conversationId);
+        }
     };
 
     useEffect((): any => {
-        socket.on("receive-message", ({ from, to, message }) => {
+        socket.on("receive-message", ({ from, conversationId, message }) => {
             const messageToAdd: MessageToDisplayType = {
-                message: message,
+                content: message,
                 sender: from,
-                receiver: to,
-                time: "r now",
+                conversationId,
+                time: new Date().toString(),
             };
 
-            console.log("Recevied msg to add", messageToAdd);
+            console.log("Received msg to add", messageToAdd);
 
             let _messageToDisplay = messageToDisplay;
             _messageToDisplay.push(messageToAdd);
             setMessagesToDisplay(_messageToDisplay);
         });
-
-        return () => socket.off("receive-message");
     }, [socket]);
 
     return (
         <MainCenterContainer className="w-screen">
-            <div className="w-screen h-screen">
-                <ResizablePanelGroup
-                    direction="horizontal"
-                    className="rounded-lg border"
-                >
+            <div style={{ width: "min(100rem, 100vw)" }} className="h-screen">
+                <ResizablePanelGroup direction="horizontal">
                     <ResizablePanel defaultSize={30}>
                         <aside className="h-screen overflow-y-auto p-2">
                             <p className="text-3xl font-bold m-2">Inbox</p>
@@ -140,8 +150,8 @@ const UserInbox = () => {
                                 className="relative"
                                 defaultSize={100}
                             >
-                                <section className="w-full p-2 h-screen flex flex-col justify-end ">
-                                    <section className="w-full absolute top-0 p-6">
+                                <section className="w-full h-screen flex flex-col justify-end ">
+                                    <section className="w-full absolute top-0 p-6 backdrop-blur-lg bg-opacity-60 bg-black z-20">
                                         <ChatHeader user={currentReceiver} />
                                     </section>
                                     <section className="px-2 py-24 overflow-y-auto">
@@ -151,7 +161,7 @@ const UserInbox = () => {
                                             receiver={currentReceiver?.username}
                                         />
                                     </section>
-                                    <section className="w-full absolute bottom-0 p-6">
+                                    <section className="w-full absolute bottom-0 p-6 backdrop-blur-lg bg-opacity-60 bg-black">
                                         <form
                                             onSubmit={handleSendMessage}
                                             className="flex w-full gap-4"
