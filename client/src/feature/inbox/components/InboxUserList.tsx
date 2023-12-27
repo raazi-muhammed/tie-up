@@ -5,7 +5,7 @@ import React from "react";
 
 const InboxUserList = ({ userData }: { userData: UserType }) => {
     return (
-        <section className="flex gap-4 rounded p-2 hover:bg-card">
+        <section className="flex gap-4 rounded p-2 hover:bg-secondary">
             <Avatar className="w-10 h-10">
                 <AvatarImage src={userData?.avatar} />
                 <AvatarFallback>

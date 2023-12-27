@@ -15,6 +15,17 @@ app.use(
     })
 );
 
+/* Socket */
+import { createServer } from "http";
+import { Server } from "socket.io";
+const http = createServer(app);
+const io = new Server(http, {
+    cors: {
+        origin: ["http://localhost:3000", "https://shopnexus.live"],
+    },
+});
+//import sockets from "./socket/socket";
+
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -30,6 +41,15 @@ app.get("/api/v1/test", (req, res) => {
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/post", postRoutes);
 
+io.on("connection", (socket: any) => {
+    console.log(socket.id);
+
+    socket.on("send-message", (message: string) => {
+        socket.broadcast.emit("receive-message", message);
+        console.log(message);
+    });
+});
+
 app.use(errorHandler);
 
-export default app;
+export default http;
