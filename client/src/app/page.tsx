@@ -1,26 +1,24 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import Container from "@/components/ui/container";
-import Navbar from "@/components/layout/navbar";
+import MainCenterContainer from "@/components/layout/mainCenterContainer";
+import { PostType } from "@/types/post.types";
+import { getAPI } from "@/lib/API";
+import CardPost from "@/feature/userPost/CardPost";
+import UserNavBar from "@/feature/layout/components/UserNavBar";
 
-export default function Home() {
+export default async function Home() {
+    const response = await getAPI("/post/all-post");
+    const posts: PostType[] = response.posts;
+
     return (
         <main className="min-h-screen">
-            <Navbar />
-            <Container>
-                <Button asChild variant="outline">
-                    <Link href="/login">Login</Link>
-                </Button>
-                <Button asChild variant="outline">
-                    <Link href="/profile">Profile</Link>
-                </Button>
-                <Button asChild variant="outline">
-                    <Link href="/home">Home</Link>
-                </Button>
-                <Button asChild variant="outline">
-                    <Link href="/inbox">Inbox</Link>
-                </Button>
-            </Container>
+            {/*  <Navbar /> */}
+            <UserNavBar />
+            <MainCenterContainer>
+                <section>
+                    {posts.map((post) => (
+                        <CardPost post={post} />
+                    ))}
+                </section>
+            </MainCenterContainer>
         </main>
     );
 }
