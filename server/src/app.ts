@@ -43,11 +43,21 @@ app.use("/api/v1/post", postRoutes);
 
 io.on("connection", (socket: any) => {
     console.log(socket.id);
+    socket.removeAllListeners();
 
-    socket.on("send-message", (message: string) => {
-        socket.broadcast.emit("receive-message", message);
-        console.log(message);
-    });
+    socket.on(
+        "send-message",
+        (sender: string, receiver: string, message: string) => {
+            console.log("SR", sender, receiver);
+
+            socket.broadcast.emit("receive-message", {
+                from: sender,
+                to: receiver,
+                message,
+            });
+            console.log("M", message);
+        }
+    );
 });
 
 app.use(errorHandler);
