@@ -12,6 +12,14 @@ export async function getAllPostFromUser(userId: string) {
     return await Post.find({ userRef: userId }).limit(10).populate("userRef");
 }
 
+export async function changePostLikeBy(postId: string, changeBy: number) {
+    return await Post.findOneAndUpdate(
+        { _id: postId },
+        { $inc: { "reaction.likeCount": changeBy } },
+        { upsert: true }
+    );
+}
+
 type CreatePostType = {
     userRef: string;
     heading: string;

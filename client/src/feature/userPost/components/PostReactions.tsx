@@ -9,18 +9,30 @@ import {
 import React, { SyntheticEvent, useState } from "react";
 import ReactionButton from "./ReactionButton";
 import { BsHeart, BsHeartFill, BsChat, BsShare } from "react-icons/bs";
-import { UserType } from "@/types/post.types";
+import { PostType, UserType } from "@/types/post.types";
 import { Textarea } from "@/components/ui/textarea";
+import { postAPI } from "@/lib/API";
+import toast from "react-hot-toast";
 
 type CommentType = {
     user: string;
     content: string;
 };
 
-type Props = { postId: string };
-const PostReactions = ({ postId }: Props) => {
-    const [likeCount, setLikeCount] = useState<number>(0);
-    const [commentCount, setCommentCount] = useState<number>(0);
+enum LikeStatus {
+    LOADING,
+    LIKED,
+    NOT_LIKED,
+}
+
+type Props = { post: PostType };
+const PostReactions = ({ post }: Props) => {
+    const [likeCount, setLikeCount] = useState<number>(
+        post?.reaction?.likeCount || 0
+    );
+    const [commentCount, setCommentCount] = useState<number>(
+        post?.reaction?.commentCount || 0
+    );
 
     const [comment, setComment] = useState<string>("");
     const [comments, setComments] = useState<CommentType[]>([
@@ -29,14 +41,44 @@ const PostReactions = ({ postId }: Props) => {
             content: "This is a good post",
         },
     ]);
-    const [isLiked, setIsLiked] = useState(false);
-    const handleLikeClick = () => {
-        if (isLiked) {
+
+    const [likeStatus, setLikeStatus] = useState<LikeStatus>(
+        LikeStatus.NOT_LIKED
+    );
+
+    const handleLikeClick = async () => {
+        setLikeStatus(LikeStatus.LOADING);
+        let response;
+        if (likeStatus === LikeStatus.LIKED) {
             setLikeCount(likeCount - 1);
+            response = await postAPI(
+                "/post/dislike-post",
+                { postId: post._id },
+                { showAlerts: true }
+            );
         } else {
             setLikeCount(likeCount + 1);
+            response = await postAPI(
+                "/post/like-post",
+                { postId: post._id },
+                { showAlerts: true }
+            );
         }
-        setIsLiked((il) => !il);
+
+        if (response.success) {
+            toast.success(response?.message || "Successful");
+            setLikeStatus(
+                likeStatus === LikeStatus.LIKED
+                    ? LikeStatus.NOT_LIKED
+                    : LikeStatus.LIKED
+            );
+        } else {
+            setLikeStatus(likeStatus);
+            setLikeCount(likeCount);
+            if (response.message === "Already liked") {
+                setLikeStatus(LikeStatus.LIKED);
+            }
+        }
     };
 
     const handleComment = (e: SyntheticEvent) => {
@@ -54,8 +96,11 @@ const PostReactions = ({ postId }: Props) => {
     return (
         <>
             <section className="flex">
-                <ReactionButton onClick={handleLikeClick}>
-                    {isLiked ? (
+                <ReactionButton
+                    disabled={likeStatus === LikeStatus.LOADING}
+                    onClick={handleLikeClick}
+                >
+                    {likeStatus === LikeStatus.LIKED ? (
                         <>
                             <BsHeartFill /> {likeCount} Likes
                         </>

@@ -10,7 +10,14 @@ import {
     createPost,
     getAllPostFromUser,
     getSinglePost,
+    changePostLikeBy,
 } from "../database/post.db";
+import {
+    addReaction,
+    getReaction,
+    removeReaction,
+} from "../database/reaction.db";
+import { ReactionTypesEnum } from "../modals/reaction.modal";
 
 router.post(
     "/new-post",
@@ -83,6 +90,59 @@ router.get(
             res.status(200).json({
                 success: true,
                 posts,
+            });
+        }
+    )
+);
+
+router.post(
+    "/like-post",
+    isUser,
+    asyncErrorHandler(
+        async (req: UserRequest, res: Response, next: NextFunction) => {
+            const { postId } = req.body;
+            const ReactionType = ReactionTypesEnum.LIKE;
+
+            const isAlreadyLiked = await getReaction(
+                postId,
+                req.user,
+                ReactionType
+            );
+            if (isAlreadyLiked) {
+                return next(new ErrorHandler("Already liked", 403));
+            }
+
+            const post = await changePostLikeBy(postId, 1);
+            if (!post) return next(new ErrorHandler("No valid post", 403));
+            if (!req.user) return next(new ErrorHandler("No valid user", 403));
+
+            await addReaction(post, req.user, ReactionType);
+
+            res.status(200).json({
+                success: true,
+                message: "You liked a post",
+            });
+        }
+    )
+);
+
+router.post(
+    "/dislike-post",
+    isUser,
+    asyncErrorHandler(
+        async (req: UserRequest, res: Response, next: NextFunction) => {
+            const { postId } = req.body;
+            const ReactionType = ReactionTypesEnum.LIKE;
+
+            const post = await changePostLikeBy(postId, -1);
+            if (!post) return next(new ErrorHandler("No valid post", 403));
+            if (!req.user) return next(new ErrorHandler("No valid user", 403));
+
+            await removeReaction(post, req.user, ReactionType);
+
+            res.status(200).json({
+                success: true,
+                message: "You remove the like",
             });
         }
     )

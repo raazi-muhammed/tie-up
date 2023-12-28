@@ -36,5 +36,6 @@ export async function postAPI(url: string, data = {}, options: Options = {}) {
             if (options.showAlerts) {
                 toast.error(err.response?.data?.message || "Invalid Details");
             }
+            return err.response.data;
         });
 }

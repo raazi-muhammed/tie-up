@@ -17,6 +17,10 @@ export interface PostType {
     description: string;
     images: string[];
     createdAt: string;
+    reaction: {
+        likeCount: number;
+        commentCount: number;
+    };
 }
 
 export interface FollowersType {

@@ -38,7 +38,7 @@ const CardPost = ({ post }: { post: PostType }) => {
                 </section>
             </CardContent>
             <CardFooter className="grid">
-                <PostReactions postId={post._id} />
+                <PostReactions post={post} />
                 <p className="text-sm opacity-60 p-4 pb-1">
                     {getFormattedDate(post.createdAt)}
                 </p>
