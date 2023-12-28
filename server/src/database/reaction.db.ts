@@ -5,9 +5,14 @@ import { UserType } from "../modals/user.modal";
 export async function addReaction(
     post: PostType,
     user: UserType,
-    type: ReactionTypesEnum
+    type: ReactionTypesEnum,
+    content?: string
 ) {
-    return await Reaction.create({ post, reacted: user, type });
+    if (content && type === ReactionTypesEnum.COMMENT) {
+        return await Reaction.create({ post, reacted: user, type, content });
+    } else {
+        return await Reaction.create({ post, reacted: user, type });
+    }
 }
 
 export async function removeReaction(
@@ -24,4 +29,11 @@ export async function getReaction(
     type: ReactionTypesEnum
 ) {
     return await Reaction.findOne({ post: postId, reacted: user, type });
+}
+
+export async function getCommentsFromPost(postId: string) {
+    return await Reaction.find({
+        post: postId,
+        type: ReactionTypesEnum.COMMENT,
+    }).populate("reacted");
 }

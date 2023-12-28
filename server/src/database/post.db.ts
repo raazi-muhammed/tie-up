@@ -20,6 +20,14 @@ export async function changePostLikeBy(postId: string, changeBy: number) {
     );
 }
 
+export async function changePostCommentBy(postId: string, changeBy: number) {
+    return await Post.findOneAndUpdate(
+        { _id: postId },
+        { $inc: { "reaction.commentCount": changeBy } },
+        { upsert: true }
+    );
+}
+
 type CreatePostType = {
     userRef: string;
     heading: string;

@@ -11,9 +11,11 @@ import {
     getAllPostFromUser,
     getSinglePost,
     changePostLikeBy,
+    changePostCommentBy,
 } from "../database/post.db";
 import {
     addReaction,
+    getCommentsFromPost,
     getReaction,
     removeReaction,
 } from "../database/reaction.db";
@@ -143,6 +145,47 @@ router.post(
             res.status(200).json({
                 success: true,
                 message: "You remove the like",
+            });
+        }
+    )
+);
+
+router.post(
+    "/comment-on-post",
+    isUser,
+    asyncErrorHandler(
+        async (req: UserRequest, res: Response, next: NextFunction) => {
+            const { postId, content } = req.body;
+            if (!content) return next(new ErrorHandler("Invalid comment", 403));
+            const ReactionType = ReactionTypesEnum.COMMENT;
+
+            const post = await changePostCommentBy(postId, 1);
+            if (!post) return next(new ErrorHandler("No valid post", 403));
+            if (!req.user) return next(new ErrorHandler("No valid user", 403));
+
+            await addReaction(post, req.user, ReactionType, content);
+
+            res.status(200).json({
+                success: true,
+                message: "You commented on a post",
+            });
+        }
+    )
+);
+
+router.get(
+    "/get-comment-from-post",
+    asyncErrorHandler(
+        async (req: Request, res: Response, next: NextFunction) => {
+            const postId = req.query?.postId?.toString();
+            if (!postId) return next(new ErrorHandler("Invalid post", 403));
+
+            const comments = await getCommentsFromPost(postId);
+
+            res.status(200).json({
+                success: true,
+                comments,
+                message: "Here are your comments",
             });
         }
     )

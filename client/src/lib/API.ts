@@ -30,7 +30,12 @@ export async function postAPI(url: string, data = {}, options: Options = {}) {
         withCredentials: true,
         data,
     })
-        .then((res) => res.data)
+        .then((res) => {
+            if (options.showAlerts) {
+                toast.success(res?.data?.message || "Successful");
+            }
+            return res.data;
+        })
         .catch((err) => {
             console.log(err);
             if (options.showAlerts) {

@@ -27,3 +27,10 @@ export interface FollowersType {
     follower: UserType;
     followed: UserType;
 }
+
+export interface CommentType {
+    _id: string;
+    reacted: UserType;
+    content: string;
+    createdAt: string;
+}

@@ -9,20 +9,22 @@ import {
 import React, { SyntheticEvent, useState } from "react";
 import ReactionButton from "./ReactionButton";
 import { BsHeart, BsHeartFill, BsChat, BsShare } from "react-icons/bs";
-import { PostType, UserType } from "@/types/post.types";
+import { CommentType, PostType, UserType } from "@/types/post.types";
 import { Textarea } from "@/components/ui/textarea";
-import { postAPI } from "@/lib/API";
-import toast from "react-hot-toast";
-
-type CommentType = {
-    user: string;
-    content: string;
-};
+import { getAPI, postAPI } from "@/lib/API";
+import CommentCard from "./CommentCard";
+import Spinner from "@/components/custom/Spinner";
 
 enum LikeStatus {
     LOADING,
     LIKED,
     NOT_LIKED,
+}
+enum CommentStatus {
+    NOT_OPENED = "NOT_OPENED",
+    LOADING = "LOADING",
+    SUBMITTING = "SUBMITTING",
+    LOADED = "LOADED",
 }
 
 type Props = { post: PostType };
@@ -35,13 +37,12 @@ const PostReactions = ({ post }: Props) => {
     );
 
     const [comment, setComment] = useState<string>("");
-    const [comments, setComments] = useState<CommentType[]>([
-        {
-            user: "John",
-            content: "This is a good post",
-        },
-    ]);
+    const [isOpen, setIsOpen] = React.useState(false);
+    const [comments, setComments] = useState<CommentType[]>([]);
 
+    const [commentStatus, setCommentStatus] = useState<CommentStatus>(
+        CommentStatus.NOT_OPENED
+    );
     const [likeStatus, setLikeStatus] = useState<LikeStatus>(
         LikeStatus.NOT_LIKED
     );
@@ -66,7 +67,6 @@ const PostReactions = ({ post }: Props) => {
         }
 
         if (response.success) {
-            toast.success(response?.message || "Successful");
             setLikeStatus(
                 likeStatus === LikeStatus.LIKED
                     ? LikeStatus.NOT_LIKED
@@ -81,18 +81,32 @@ const PostReactions = ({ post }: Props) => {
         }
     };
 
-    const handleComment = (e: SyntheticEvent) => {
-        e.preventDefault();
-        const newComment: CommentType = {
-            user: "Raazi",
-            content: comment,
-        };
+    async function getComments() {
+        setCommentStatus(CommentStatus.LOADING);
+        const response = await getAPI("/post/get-comment-from-post", {
+            postId: post._id,
+        });
+        console.log(response);
+        setComments((response?.comments as CommentType[]) || []);
+        setCommentCount((cc) => cc + 1);
+        setCommentStatus(CommentStatus.LOADED);
+    }
 
-        setComments([...comments, newComment]);
+    const handleComment = async (e: SyntheticEvent) => {
+        e.preventDefault();
+        setCommentStatus(CommentStatus.SUBMITTING);
+
+        const response = await postAPI(
+            "/post/comment-on-post",
+            { postId: post._id, content: comment },
+            { showAlerts: true }
+        );
+        console.log(response);
+
+        getComments();
         setComment("");
     };
 
-    const [isOpen, setIsOpen] = React.useState(false);
     return (
         <>
             <section className="flex">
@@ -112,7 +126,7 @@ const PostReactions = ({ post }: Props) => {
                 </ReactionButton>
                 <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                     <CollapsibleTrigger asChild>
-                        <ReactionButton>
+                        <ReactionButton onClick={() => getComments()}>
                             <BsChat /> {commentCount} Comment
                         </ReactionButton>
                     </CollapsibleTrigger>
@@ -125,11 +139,11 @@ const PostReactions = ({ post }: Props) => {
             <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                 <CollapsibleContent className="flex flex-col pt-4 gap-2">
                     {comments.map((comment) => (
-                        <section className="w-full border rounded p-4">
-                            <p>{comment.user}</p>
-                            <p>{comment.content}</p>
-                        </section>
+                        <CommentCard key={comment._id} comment={comment} />
                     ))}
+                    <Spinner
+                        isLoading={commentStatus === CommentStatus.LOADING}
+                    />
                     <form onSubmit={handleComment}>
                         <Textarea
                             value={comment}
@@ -137,10 +151,23 @@ const PostReactions = ({ post }: Props) => {
                             placeholder="Write a comment."
                         />
                         <div className="flex justify-between pt-2">
-                            <Button variant="outline" size="sm">
+                            <Button
+                                disabled={
+                                    commentStatus === CommentStatus.SUBMITTING
+                                }
+                                variant="outline"
+                                size="sm"
+                            >
                                 Cancel
                             </Button>
-                            <Button size="sm"> Submit</Button>
+                            <Button
+                                disabled={
+                                    commentStatus === CommentStatus.SUBMITTING
+                                }
+                                size="sm"
+                            >
+                                Submit
+                            </Button>
                         </div>
                     </form>
                 </CollapsibleContent>
