@@ -17,7 +17,7 @@ const PostUser = ({ username, avatar }: PostUserType) => {
             </Avatar>
             <Link
                 href={`/user/${username}`}
-                className="hover:underline mb-1 mt-auto"
+                className="hover:underline my-auto"
             >
                 {username}
             </Link>

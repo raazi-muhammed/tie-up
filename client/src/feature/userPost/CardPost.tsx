@@ -8,14 +8,13 @@ import {
 import Link from "next/link";
 import { getFormattedDate } from "@/utils/formatting";
 import { PostType } from "@/types/post.types";
-import { BsHeart, BsChat, BsShare } from "react-icons/bs";
-import ReactionButton from "./components/ReactionButton";
 import PostUser from "./components/PostUser";
 import {
     Image,
     ImageContainer,
     ImageFallback,
 } from "@/components/custom/image";
+import PostReactions from "./components/PostReactions";
 
 const CardPost = ({ post }: { post: PostType }) => {
     return (
@@ -39,17 +38,7 @@ const CardPost = ({ post }: { post: PostType }) => {
                 </section>
             </CardContent>
             <CardFooter className="grid">
-                <section className="flex">
-                    <ReactionButton>
-                        <BsHeart /> Like
-                    </ReactionButton>
-                    <ReactionButton>
-                        <BsChat /> Comment
-                    </ReactionButton>
-                    <ReactionButton>
-                        <BsShare /> Share
-                    </ReactionButton>
-                </section>
+                <PostReactions postId={post._id} />
                 <p className="text-sm opacity-60 p-4 pb-1">
                     {getFormattedDate(post.createdAt)}
                 </p>

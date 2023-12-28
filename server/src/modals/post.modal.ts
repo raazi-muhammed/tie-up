@@ -6,6 +6,10 @@ export interface PostType extends Document {
     heading: string;
     description: string;
     images: string[];
+    reaction: {
+        likeCount: number;
+        commentCount: number;
+    };
 }
 
 const postSchema = new mongoose.Schema(
@@ -24,6 +28,16 @@ const postSchema = new mongoose.Schema(
             required: true,
         },
         images: [String],
+        reaction: {
+            likeCount: {
+                type: Number,
+                default: 0,
+            },
+            commentCount: {
+                type: Number,
+                default: 0,
+            },
+        },
     },
     { timestamps: true }
 );
