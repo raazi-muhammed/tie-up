@@ -48,6 +48,29 @@ const UserInbox = () => {
 
     const socket = useMemo(() => io("http://localhost:5000"), [io]);
 
+    const handleCall = async () => {
+        if (!currentReceiver || !currentSender || !conversationId) {
+            console.log("no sender or receiver, or not id, while sending");
+            return;
+        }
+
+        const messageToAdd: MessageToDisplayType = {
+            content: `Join the call at http://localhost:3000/inbox/call/${conversationId}`,
+            sender: currentSender.username,
+            conversationId,
+            time: new Date().toString(),
+        };
+        let _messageToDisplay = messageToDisplay;
+        _messageToDisplay.push(messageToAdd);
+        setMessagesToDisplay(_messageToDisplay);
+
+        socket.emit(
+            "send-message",
+            currentSender.username,
+            conversationId,
+            `Join the call at http://localhost:3000/inbox/call/${conversationId}`
+        );
+    };
     const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!message) {
@@ -152,7 +175,10 @@ const UserInbox = () => {
                             >
                                 <section className="w-full h-screen flex flex-col justify-end ">
                                     <section className="w-full absolute top-0 p-6 backdrop-blur-lg bg-opacity-60 bg-black z-20">
-                                        <ChatHeader user={currentReceiver} />
+                                        <ChatHeader
+                                            user={currentReceiver}
+                                            handleCall={handleCall}
+                                        />
                                     </section>
                                     <section className="px-2 py-24 overflow-y-auto">
                                         <MessagesList
